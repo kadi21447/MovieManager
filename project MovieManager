@@ -1,0 +1,153 @@
+// تعريف كلاس Movie
+class Movie {
+    var id: Int
+    var title: String
+    var director: String
+    var rating: Double?
+    var available: Bool?
+    
+    init(id: Int, title: String, director: String, rating: Double?, available: Bool?) {
+        self.id = id
+        self.title = title
+        self.director = director
+        self.rating = rating
+        self.available = available
+    }
+    
+    func displayInfo() {
+        print("""
+        فيلم:
+        ID: \(id)
+        العنوان: \(title)
+        المخرج: \(director)
+        التقييم: \(rating ?? 0.0)
+        متاح: \((available ?? false) ? "نعم" : "لا")
+        """)
+    }
+}
+
+// تعريف كلاس MovieManager
+class MovieManager {
+    private var movies: [Movie] = []
+    
+    // إضافة فيلم
+    func addMovie(_ movie: Movie) {
+        movies.append(movie)
+    }
+    
+    // عرض كل الأفلام
+    func displayAllMovies() {
+        for mov in movies {
+            mov.displayInfo()
+            print("---------------------")
+        }
+    }
+    
+    // حذف فيلم
+    func deleteMovie(_ id: Int) {
+        movies.removeAll { $0.id == id }
+    }
+    
+    // بحث بعنوان
+    func findByTitle(_ title: String) -> [Movie] {
+        return movies.filter { $0.title.lowercased().contains(title.lowercased()) }
+    }
+    
+    // بحث بمخرج
+    func findByDirector(_ director: String) -> [Movie] {
+        return movies.filter { $0.director.lowercased().contains(director.lowercased()) }
+    }
+    
+    // تعديل فيلم
+    func editMovie(id: Int, title: String?, director: String?, rating: Double?, available: Bool?) {
+        if let mov = movies.first(where: { $0.id == id }) {
+            if let newTitle = title { mov.title = newTitle }
+            if let newDirector = director { mov.director = newDirector }
+            if let newRating = rating { mov.rating = newRating }
+            if let newAvailable = available { mov.available = newAvailable }
+        } else {
+            print("❌ لا يوجد فيلم بهذا المعرف.")
+        }
+    }
+    
+    // بيع فيلم (جعله غير متاح)
+    func sellMovie(id: Int) {
+        if let mov = movies.first(where: { $0.id == id }) {
+            if mov.available == true {
+                mov.available = false
+            }
+        }
+    }
+    
+    // عرض الأفلام الممتازة
+    func displayExcellentMovies() {
+        let excellent = movies.filter { ($0.rating ?? 0.0) >= 4.0 }
+        if excellent.isEmpty {
+            print(" لا توجد أفلام ممتازة حالياً.")
+        } else {
+            print("🎯 الأفلام الممتازة:")
+            for movie in excellent {
+                movie.displayInfo()
+                print("---------------------")
+            }
+        }
+    }
+
+    // قائمة الخيارات
+    func showMenu() {
+        print("""
+        🎬 مرحبًا بك في إدارة الأفلام
+        اختر خيارًا:
+        1. عرض كل الأفلام
+        2. إضافة فيلم
+        3. تعديل فيلم
+        4. حذف فيلم
+        5. البحث عن فيلم بعنوان
+        6. البحث عن فيلم بمخرج
+        7. الخروج
+        """)
+        print("----------------")
+    }
+}
+
+// 🎬 تجربة البرنامج
+
+let manager = MovieManager()
+
+// عرض القائمة
+manager.showMenu()
+
+// إضافة أفلام
+manager.addMovie(Movie(id: 1, title: "Inception", director: "Christopher Nolan", rating: 8.8, available: true))
+manager.addMovie(Movie(id: 2, title: "The Matrix", director: "Lana Wachowski", rating: 8.7, available: true))
+manager.addMovie(Movie(id: 3, title: "Interstellar", director: "Christopher Nolan", rating: 8.6, available: true))
+
+// عرض كل الأفلام
+manager.displayAllMovies()
+
+// بيع فيلم (جعله غير متاح)
+manager.sellMovie(id: 2)
+
+// تعديل فيلم
+manager.editMovie(id: 3, title: "Interstellar (2014)", director: nil, rating: 9.0, available: nil)
+
+// البحث بعنوان
+let result1 = manager.findByTitle("matrix")
+for movie in result1 {
+    movie.displayInfo()
+}
+
+// البحث بمخرج
+let result2 = manager.findByDirector("Nolan")
+for movie in result2 {
+    movie.displayInfo()
+}
+
+// عرض الأفلام الممتازة
+manager.displayExcellentMovies()
+
+// حذف فيلم
+manager.deleteMovie(1)
+
+// عرض بعد الحذف
+manager.displayAllMovies()
